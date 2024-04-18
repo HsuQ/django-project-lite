@@ -1,0 +1,22 @@
+/venv/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IntelliJ project files
+.idea
+
+# VSCode
+.vscode
+
+# Django stuff:
+db.sqlite3
+
+# Virtualenv
+venv/
+
+# docker
+.env
+/django-project-lite/settings.py
+**/migrations/

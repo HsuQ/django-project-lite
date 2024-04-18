@@ -1,0 +1,28 @@
+upstream django-project-lite {
+    server web:8000;
+}
+
+server {
+    listen 8800;
+    server_name 0.0.0.0;
+
+    charset utf-8;
+
+    # disable any limits to avoid HTTP 413 for large image uploads
+    client_max_body_size 0;
+
+    gzip on;
+    gzip_comp_level 5;
+    gzip_disable "MSIE [1-6]\.";
+    gzip_types text/plain application/javascript application/x-javascript text/javascript image/jpeg image/gif image/png;
+    gzip_vary on;
+
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Host $host:$server_port;
+        proxy_redirect off;
+        proxy_pass http://django-project-lite;
+    }
+}
+

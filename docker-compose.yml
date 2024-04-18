@@ -1,0 +1,55 @@
+version: '3.7'
+
+services:
+  web:
+    build: .
+    entrypoint: gunicorn --worker-class=gevent django-project-lite.wsgi:application --bind 0.0.0.0:8000 -w 9
+    restart: always
+    env_file: .env
+    environment:
+      - requirements=requirements/production.txt
+      - MYSQL_ENGINE=${MYSQL_ENGINE}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - APPID=${APPID}
+      - APP_SECRET=${APP_SECRET}
+      - ACCESS_KEY_ID=${ACCESS_KEY_ID}
+      - ACCESS_KEY_SECRET=${ACCESS_KEY_SECRET}
+      - BUCKET=${BUCKET}
+      - ENDPOINT=${ENDPOINT}
+      - FILE_PREFIX=${FILE_PREFIX}
+      - REDIS_LOCATION=${REDIS_LOCATION}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - BASE_API=${BASE_API}
+      - DEBUG=${DEBUG}
+    volumes:
+      - .:/django-project-lite/code
+      - ./static:/django-project-lite/code/static
+      - ../media:/django-project-lite/media
+      - ../logs:/django-project-lite/logs
+    ports:
+      - "8000:8000"
+    networks:
+      - main
+
+  nginx:
+    image: nginx
+    command: /bin/bash -c "envsubst '$$SERVER_NAME' < /etc/nginx/conf.d/nginx.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+    restart: always
+    env_file: .env
+    volumes:
+      - ./deploy_tools/nginx.conf.template:/etc/nginx/conf.d/nginx.conf.template:ro
+      - ./static:/usr/src/django-project-lite/static
+      - ../media:/usr/src/django-project-lite/media
+    ports:
+      - "8800:8800"
+    networks:
+      - main
+    depends_on:
+      - web
+
+networks:
+  main:
