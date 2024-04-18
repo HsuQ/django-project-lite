@@ -15,3 +15,4 @@
    - 若需要收集静态文件 `python manage.py collectstatic --no-input`
    - 迁移数据库 `python manage.py makemigrations`
    - 迁移数据库 `python manage.py migrate` 
+- 开放端口8800
